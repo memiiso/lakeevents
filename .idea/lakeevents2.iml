@@ -1139,6 +1139,32 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library name="Quarkus (deployment)">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-core-deployment/1.0.0-M7/camel-quarkus-core-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/io/quarkus/quarkus-arc-deployment/1.4.1.Final/quarkus-arc-deployment-1.4.1.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-support-common-deployment/1.0.0-M7/camel-quarkus-support-common-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-jackson-deployment/1.0.0-M7/camel-quarkus-jackson-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-xml-jaxb-deployment/1.0.0-M7/camel-quarkus-xml-jaxb-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-support-xml-deployment/1.0.0-M7/camel-quarkus-support-xml-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/io/quarkus/quarkus-jackson-deployment/1.4.1.Final/quarkus-jackson-deployment-1.4.1.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-log-deployment/1.0.0-M7/camel-quarkus-log-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-debezium-postgres-deployment/1.0.0-M7/camel-quarkus-debezium-postgres-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-support-debezium-deployment/1.0.0-M7/camel-quarkus-support-debezium-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/io/quarkus/quarkus-jdbc-postgresql-deployment/1.4.1.Final/quarkus-jdbc-postgresql-deployment-1.4.1.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-direct-deployment/1.0.0-M7/camel-quarkus-direct-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-jaxb-deployment/1.0.0-M7/camel-quarkus-jaxb-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/io/quarkus/quarkus-jaxb-deployment/1.4.1.Final/quarkus-jaxb-deployment-1.4.1.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-jms-deployment/1.0.0-M7/camel-quarkus-jms-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-support-spring-deployment/1.0.0-M7/camel-quarkus-support-spring-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-support-commons-logging-deployment/1.0.0-M7/camel-quarkus-support-commons-logging-deployment-1.0.0-M7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/camel/quarkus/camel-quarkus-timer-deployment/1.0.0-M7/camel-quarkus-timer-deployment-1.0.0-M7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.apache.camel.springboot:camel-debezium-postgres-starter:3.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.2.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.2.7.RELEASE" level="project" />
