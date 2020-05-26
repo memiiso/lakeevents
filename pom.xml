@@ -23,8 +23,6 @@
             <artifactId>camel-debezium-postgres-starter</artifactId>
             <version>3.3.0</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-debezium-postgres</artifactId>
@@ -162,12 +160,13 @@
             <artifactId>camel-quarkus-log</artifactId>
             <version>${camel-quarkus.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-aws-s3</artifactId>
-            <version>3.3.0</version>
-        </dependency>
+        <!--
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-aws-s3</artifactId>
+           <version>3.3.0</version>
+       </dependency>
+        -->
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>org.easytesting</groupId>
@@ -205,9 +204,19 @@
         <plugins>
 
             <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <systemProperties>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>1.5.0.CR1</version>
+                <version>1.4.2.Final</version>
                 <executions>
                     <execution>
                         <id>build</id>
@@ -223,9 +232,29 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <systemProperties>
+                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner
+                                </native.image.path>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <finalName>${project.build.finalName}</finalName>
                     <descriptors>
                         <descriptor>src/main/assembly/assembly.xml</descriptor>
                     </descriptors>
@@ -251,7 +280,6 @@
         </plugins>
     </build>
 
-
     <profiles>
         <profile>
             <id>native</id>
@@ -265,5 +293,6 @@
             </properties>
         </profile>
     </profiles>
+
 
 </project>

@@ -38,7 +38,7 @@
       <directory>${project.build.directory}</directory>
       <outputDirectory>${project.artifactId}</outputDirectory>
       <includes>
-        <include>${project.artifactId}-${project.version}-runner.jar</include>
+        <include>${project.build.finalName}.jar</include>
       </includes>
     </fileSet>
     <fileSet>
