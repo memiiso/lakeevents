@@ -8,7 +8,6 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.aws.s3.S3Constants;
 import org.apache.camel.component.jms.JmsComponent;
-import org.apache.camel.model.dataformat.AvroDataFormat;
 import org.apache.camel.model.dataformat.JsonDataFormat;
 import org.apache.camel.spi.PropertiesComponent;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -86,10 +85,11 @@ public class LakeEventsServer extends RouteBuilder {
                 .convertBodyTo(String.class)
                 .to("jms:queue:CustomersJSON?disableReplyTo=true");
 
+        // @TODO fix- enable avro after native build
         from("direct:avro-writer")
                 .routeId(LakeEventsServer.class.getName() + ".S3LakeAvroWriter")
                 .log(LoggingLevel.WARN, "AVRO Sink message \nBODY: ${body} \nHEADERS: ${headers}")
-                .marshal(new AvroDataFormat())
+                .marshal(new JsonDataFormat())
                 .convertBodyTo(String.class)
                 .to("jms:queue:CustomersAvro?disableReplyTo=true");
     }

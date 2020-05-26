@@ -39,6 +39,7 @@
             <artifactId>camel-quarkus-core</artifactId>
             <version>${camel-quarkus.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-avro-rpc</artifactId>
@@ -49,6 +50,7 @@
             <artifactId>camel-quarkus-avro</artifactId>
             <version>${camel-quarkus.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jackson</artifactId>
@@ -117,11 +119,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-avro-rpc</artifactId>
-            <version>${camel-quarkus.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-debezium-postgres</artifactId>
             <version>${camel-quarkus.version}</version>
         </dependency>
@@ -133,11 +130,6 @@
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jaxb</artifactId>
-            <version>${camel-quarkus.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-jackson</artifactId>
             <version>${camel-quarkus.version}</version>
         </dependency>
         <dependency>
@@ -160,13 +152,16 @@
             <artifactId>camel-quarkus-log</artifactId>
             <version>${camel-quarkus.version}</version>
         </dependency>
-        <!--
-       <dependency>
-           <groupId>org.apache.camel</groupId>
-           <artifactId>camel-aws-s3</artifactId>
-           <version>3.3.0</version>
-       </dependency>
-        -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-aws-s3</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.65</version>
+        </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>org.easytesting</groupId>
@@ -272,6 +267,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
