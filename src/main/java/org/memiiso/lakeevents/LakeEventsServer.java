@@ -3,7 +3,6 @@ package org.memiiso.lakeevents;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.Startup;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
-import org.apache.camel.CamelContext;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.aws.s3.S3Constants;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 
 //@Service
@@ -43,8 +41,7 @@ public class LakeEventsServer extends RouteBuilder {
                     + "&tableWhitelist={{database.schema}}.customers"
                     + "&offsetStorageFileName=/tmp/offset.dat"
                     + "&pluginName=pgoutput";
-    @Inject
-    public CamelContext camelContext;
+
     @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
     public String S3_BUCKET_NAME;
 
@@ -57,7 +54,6 @@ public class LakeEventsServer extends RouteBuilder {
     @PostConstruct
     public void start() {
         logger.info("Starting...");
-        logger.warn("Camel contex name is {}", camelContext.getName());
     }
 
     public void stop(@Observes ShutdownEvent event) {
