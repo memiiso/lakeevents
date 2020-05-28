@@ -12,8 +12,6 @@ import org.apache.camel.spi.PropertiesComponent;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -23,11 +21,9 @@ import javax.jms.ConnectionFactory;
 //@Service
 @ApplicationScoped
 @Startup
-@Service
-@Component
+//@Service
+//@Component
 public class LakeEventsServer extends RouteBuilder {
-    private static final String S3_LAKE_WRITER = "direct:json-writer";
-    private static final String S3_LAKE_AVRO_WRITER = "direct:avro-writer";
     final Logger logger = LoggerFactory.getLogger(LakeEventsServer.class);
     private static final String DATABASE_READER =
             "debezium-postgres:{{database.hostname}}?"
@@ -45,11 +41,6 @@ public class LakeEventsServer extends RouteBuilder {
     @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
     public String S3_BUCKET_NAME;
 
-    //private void typeConverterSetup() {
-    //    getContext().getTypeConverterRegistry()
-    //            .addTypeConverter(Customer.class, Struct.class, new CustomerConverter());
-    //}
-
     @SuppressWarnings("unchecked")
     @PostConstruct
     public void start() {
@@ -62,11 +53,8 @@ public class LakeEventsServer extends RouteBuilder {
 
     @Override
     public void configure() {
-        logger.warn("Configure...");
-        //from("timer://testTimer").log(LoggingLevel.INFO,"This is testTimer logging");
-        logger.error(getContext().getPropertiesComponent().getLocations().toString());
-        logger.error(getContext().getComponentNames().toString());
-
+        logger.info("Configure...");
+        logger.info("S3 bucket name {}", S3_BUCKET_NAME);
         final PropertiesComponent prop = getContext().getPropertiesComponent();
         final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(prop.resolveProperty("broker.url").get());
         final JmsComponent jmsComponent = JmsComponent.jmsComponentAutoAcknowledge(connectionFactory);
@@ -91,13 +79,13 @@ public class LakeEventsServer extends RouteBuilder {
                 .convertBodyTo(String.class)
                 //You can include the optional queue: prefix, if you prefer:
                 .to("jms:queue:CustomersJSON?disableReplyTo=true");
-
+  /*
         from("jms:queue:CustomersJSON")
                 .startupOrder(18)
                 .routeId(LakeEventsServer.class.getName() + ".S3LakeWriter")
                 .log(LoggingLevel.WARN, "JSON Sink message \nBODY: ${body} \nHEADERS: ${headers}")
                 .convertBodyTo(String.class)
-                .to("aws2-s3://{{bucketNameOrArn}}?accessKey={{accessKey}}&secretKey={{secretKey}}&prefix={{prefix}}&" +
+                .toD("aws2-s3://{{bucketNameOrArn}}?accessKey={{accessKey}}&secretKey={{secretKey}}&prefix={{prefix}}&" +
                         "overrideEndpoint={{overrideEndpoint}}&uriEndpointOverride={{uriEndpointOverride}}");
 
                 /*

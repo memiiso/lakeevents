@@ -5,7 +5,7 @@
  */
 package org.memiiso.lakeevents;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
@@ -15,24 +15,26 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import java.time.Duration;
 
 public class TestS3 {
-
-    static final int MINIO_DEFAULT_PORT = 9000;
+    public static int MINIO_MAPPED_PORT = 9001;
+    public static String MINIO_ACCESS_KEY = "test";
     static final String DEFAULT_IMAGE = "minio/minio";
     static final String DEFAULT_TAG = "edge";
     static final String DEFAULT_STORAGE_DIRECTORY = "/data";
     static final String HEALTH_ENDPOINT = "/minio/health/ready";
-    @ConfigProperty(name = "accessKey")
-    static String MINIO_ACCESS_KEY;
-    @ConfigProperty(name = "secretKey")
-    static String MINIO_SECRET_KEY = "testtest";
+    public static String MINIO_SECRET_KEY = "testtest";
+    static int MINIO_DEFAULT_PORT = 9000;
 
     final Logger logger = LoggerFactory.getLogger(TestS3.class);
     private GenericContainer container = null;
 
     public void start() {
 
+        Assertions.assertNotNull(MINIO_ACCESS_KEY);
+        Assertions.assertNotNull(MINIO_SECRET_KEY);
+        Assertions.assertTrue(MINIO_SECRET_KEY.length() >= 8);
+
         this.container = new FixedHostPortGenericContainer(DEFAULT_IMAGE + ':' + DEFAULT_TAG)
-                .withFixedExposedPort(MINIO_DEFAULT_PORT, MINIO_DEFAULT_PORT)
+                .withFixedExposedPort(MINIO_MAPPED_PORT, MINIO_DEFAULT_PORT)
                 .waitingFor(new HttpWaitStrategy()
                         .forPath(HEALTH_ENDPOINT)
                         .forPort(MINIO_DEFAULT_PORT)
