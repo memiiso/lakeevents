@@ -3,6 +3,7 @@ package org.memiiso.lakeevents;
 import io.quarkus.test.junit.NativeImageTest;
 import org.apache.camel.component.aws.s3.S3Constants;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.fest.assertions.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +38,9 @@ public class LakeEventsServerIT extends LakeEventsServerTest {
     static TestDatabase testDb = new TestDatabase();
     public final Logger logger = LoggerFactory.getLogger(LakeEventsServerIT.class);
 
+    @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
+    public String S3_BUCKET_NAME;
+
     @BeforeAll
     public static void startContainers() {
         s3server.start();
@@ -56,7 +60,7 @@ public class LakeEventsServerIT extends LakeEventsServerTest {
     @Test
     public void endToEndTest() throws Exception {
         Thread.sleep(500000);
-        assertThat(lakeEvents.S3_BUCKET_NAME).isEqualTo("test-bucket");
+        assertThat(S3_BUCKET_NAME).isEqualTo("test-bucket");
         assertNotNull(ConfigProvider.getConfig().getValue(S3Constants.BUCKET_NAME, String.class));
 
         ProfileCredentialsProvider pcred = ProfileCredentialsProvider.create("default");

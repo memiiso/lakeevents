@@ -5,31 +5,29 @@
  */
 package org.memiiso.lakeevents;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 
 import java.time.Duration;
 
 public class TestS3 {
+
     static final int MINIO_DEFAULT_PORT = 9000;
     static final String DEFAULT_IMAGE = "minio/minio";
     static final String DEFAULT_TAG = "edge";
     static final String DEFAULT_STORAGE_DIRECTORY = "/data";
     static final String HEALTH_ENDPOINT = "/minio/health/ready";
+    @ConfigProperty(name = "accessKey")
     static String MINIO_ACCESS_KEY;
-    static String MINIO_SECRET_KEY;
+    @ConfigProperty(name = "secretKey")
+    static String MINIO_SECRET_KEY = "testtest";
+
     final Logger logger = LoggerFactory.getLogger(TestS3.class);
     private GenericContainer container = null;
-
-    {
-        ProfileCredentialsProvider pcred = ProfileCredentialsProvider.create("default");
-        MINIO_ACCESS_KEY = pcred.resolveCredentials().accessKeyId();
-        MINIO_SECRET_KEY = pcred.resolveCredentials().secretAccessKey();
-    }
 
     public void start() {
 

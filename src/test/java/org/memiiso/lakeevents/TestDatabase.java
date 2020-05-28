@@ -5,6 +5,7 @@
  */
 package org.memiiso.lakeevents;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -13,12 +14,18 @@ import java.time.Duration;
 
 public class TestDatabase {
 
-    static final String POSTGRES_USER = "postgres";
-    static final String POSTGRES_PASSWORD = "postgres";
-    static final String POSTGRES_DBNAME = "postgres";
-    static final String POSTGRES_IMAGE = "debezium/example-postgres";
-    static final String POSTGRES_HOST = "localhost";
-    static final Integer POSTGRES_PORT = 5432;
+    @ConfigProperty(name = "database.user")
+    static String POSTGRES_USER;
+    @ConfigProperty(name = "database.password")
+    static String POSTGRES_PASSWORD;
+    @ConfigProperty(name = "database.dbname")
+    static String POSTGRES_DBNAME;
+    @ConfigProperty(name = "database.hostname")
+    static String POSTGRES_HOST;
+    @ConfigProperty(name = "database.port")
+    static Integer POSTGRES_PORT = 5432;
+
+    static String POSTGRES_IMAGE = "debezium/example-postgres";
 
     private GenericContainer container;
 

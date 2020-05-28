@@ -64,30 +64,53 @@ public class LakeEventsServer extends RouteBuilder {
     public void configure() {
         logger.warn("Configure...");
         //from("timer://testTimer").log(LoggingLevel.INFO,"This is testTimer logging");
-        //this.jmsComponentSetup();
+        logger.error(getContext().getPropertiesComponent().getLocations().toString());
+        logger.error(getContext().getComponentNames().toString());
+
+        final PropertiesComponent prop = getContext().getPropertiesComponent();
+        final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(prop.resolveProperty("broker.url").get());
+        final JmsComponent jmsComponent = JmsComponent.jmsComponentAutoAcknowledge(connectionFactory);
+        jmsComponent.setUsername(prop.resolveProperty("broker.user").get());
+        jmsComponent.setPassword(prop.resolveProperty("broker.password").get());
+        getContext().addComponent("jms", jmsComponent);
 
         from(DATABASE_READER)
+                .startupOrder(20)
                 .routeId(LakeEventsServer.class.getName() + ".DatabaseReader")
                 .log(LoggingLevel.WARN, "Incoming message \nBODY: ${body} \nHEADERS: ${headers}")
                 .multicast().streaming().parallelProcessing()
-                .stopOnException().to("direct:json-writer", "direct:avro-writer")
+                .stopOnException().to("direct:json-writer")
                 .end()
                 .end();
 
         from("direct:json-writer")
-                .routeId(LakeEventsServer.class.getName() + ".S3LakeWriter")
+                .startupOrder(19)
+                .routeId(LakeEventsServer.class.getName() + ".JMSQueeJSONWriter")
                 .log(LoggingLevel.WARN, "JSON Sink message \nBODY: ${body} \nHEADERS: ${headers}")
                 .marshal(new JsonDataFormat())
                 .convertBodyTo(String.class)
+                //You can include the optional queue: prefix, if you prefer:
                 .to("jms:queue:CustomersJSON?disableReplyTo=true");
 
+        from("jms:queue:CustomersJSON")
+                .startupOrder(18)
+                .routeId(LakeEventsServer.class.getName() + ".S3LakeWriter")
+                .log(LoggingLevel.WARN, "JSON Sink message \nBODY: ${body} \nHEADERS: ${headers}")
+                .convertBodyTo(String.class)
+                .to("aws2-s3://{{bucketNameOrArn}}?accessKey={{accessKey}}&secretKey={{secretKey}}&prefix={{prefix}}&" +
+                        "overrideEndpoint={{overrideEndpoint}}&uriEndpointOverride={{uriEndpointOverride}}");
+
+                /*
         // @TODO fix- enable avro after native build
         from("direct:avro-writer")
-                .routeId(LakeEventsServer.class.getName() + ".S3LakeAvroWriter")
+                .startupOrder(10)
+                .routeId(LakeEventsServer.class.getName() + ".JMSQueeAvroWriter")
                 .log(LoggingLevel.WARN, "AVRO Sink message \nBODY: ${body} \nHEADERS: ${headers}")
                 .marshal(new JsonDataFormat())
                 .convertBodyTo(String.class)
                 .to("jms:queue:CustomersAvro?disableReplyTo=true");
+                 */
+
     }
 
     //private void typeConverterSetup() {
@@ -95,16 +118,6 @@ public class LakeEventsServer extends RouteBuilder {
     //    camelContext.getTypeConverterRegistry()
     //            .addTypeConverter(Customer.class, Struct.class, new CustomerConverter());
     // }
-    private void jmsComponentSetup() {
-        logger.error(getContext().getPropertiesComponent().getLocations().toString());
-        logger.error(getContext().getComponentNames().toString());
-        final PropertiesComponent prop = getContext().getPropertiesComponent();
-        final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(prop.resolveProperty("broker.url").get());
-        final JmsComponent jmsComponent = JmsComponent.jmsComponentAutoAcknowledge(connectionFactory);
-        jmsComponent.setUsername(prop.resolveProperty("broker.user").get());
-        jmsComponent.setPassword(prop.resolveProperty("broker.password").get());
-        getContext().addComponent("jms", jmsComponent);
-    }
 
 /*
     from("aws-s3://bucket-name?deleteAfterRead=false&maxMessagesPerPoll=25&delay=5000")

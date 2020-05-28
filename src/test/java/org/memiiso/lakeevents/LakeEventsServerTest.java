@@ -28,10 +28,15 @@ public class LakeEventsServerTest {
     static TestS3 s3server = new TestS3();
     static TestDatabase testDb = new TestDatabase();
     public final Logger logger = LoggerFactory.getLogger(LakeEventsServerTest.class);
-
     @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
     public String S3_BUCKET_NAME;
-    LakeEventsServer lakeEvents;
+    @ConfigProperty(name = "bucketNameOrArn")
+    String s3_name;
+
+    {
+        logger.warn("creating LakeEventsServer");
+        //lakeEvents = new LakeEventsServer();
+    }
 
     @BeforeAll
     public static void startContainers() {
@@ -49,13 +54,13 @@ public class LakeEventsServerTest {
         }
     }
 
-    @ConfigProperty(name = "bucketNameOrArn")
-    String s3_name;
-
     @Test
     public void testLakeEventsService() throws InterruptedException, URISyntaxException {
-        lakeEvents = new LakeEventsServer();
-        lakeEvents.start();
+        logger.warn("running testLakeEventsService");
+        //String lakeEvents=null;
+        LakeEventsServer lakeEvents = new LakeEventsServer();
+        //LakeEventsServer lakeEvents;
+        //lakeEvents.start();
 
         Assertions.assertNotNull(s3_name);
         Assertions.assertNotNull(lakeEvents);
@@ -82,7 +87,7 @@ public class LakeEventsServerTest {
         if (objects.size() >= 2) {
             System.out.println(objects.toString());
         }
-        org.fest.assertions.Assertions.assertThat((objects.size() >= 2));
+        Assertions.assertEquals(objects.size(), 2);
 
     }
 
