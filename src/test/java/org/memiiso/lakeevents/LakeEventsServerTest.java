@@ -19,7 +19,6 @@ import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 
@@ -58,10 +57,12 @@ public class LakeEventsServerTest {
     }
 
     @Test
-    public void testLakeEventsService() throws InterruptedException, URISyntaxException {
+    public void testLakeEventsService() throws Exception {
         logger.warn("running testLakeEventsService");
         Assertions.assertNotNull(S3_BUCKET_NAME);
         LakeEventsServer lakeEvents = new LakeEventsServer();
+        lakeEvents.manualstart();
+        logger.warn("started LakeEventsServer");
         Assertions.assertNotNull(lakeEvents);
         Thread.sleep(500);
         assertThat(S3_BUCKET_NAME).isEqualTo("test-bucket");
@@ -84,7 +85,6 @@ public class LakeEventsServerTest {
                     .build();
             ListObjectsResponse res = s3client.listObjects(listObjects);
             List<S3Object> objects = res.contents();
-            System.out.println(objects.toString());
             if (objects.size() >= 2) {
                 System.out.println(objects.toString());
             }
