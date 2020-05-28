@@ -21,18 +21,28 @@
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-debezium-postgres-starter</artifactId>
-            <version>3.3.0</version>
+            <version>${camel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-debezium-postgres</artifactId>
-            <version>3.3.0</version>
+            <version>${camel.version}</version>
             <!-- use the same version as your Camel core version -->
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring-boot-starter</artifactId>
             <version>3.0.0-RC3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
@@ -65,6 +75,16 @@
             <groupId>io.debezium</groupId>
             <artifactId>debezium-embedded</artifactId>
             <version>${debezium.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.debezium</groupId>
@@ -196,11 +216,13 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+                <!--
                 <configuration>
                     <systemProperties>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemProperties>
                 </configuration>
+                -->
             </plugin>
 
             <plugin>
