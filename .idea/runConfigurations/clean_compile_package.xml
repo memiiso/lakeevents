@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="package -Pnative" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="clean compile package" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings">
         <MavenGeneralSettings>
@@ -27,8 +27,9 @@
           </option>
           <option name="goals">
             <list>
+              <option value="clean" />
+              <option value="compile" />
               <option value="package" />
-              <option value="-Pnative" />
             </list>
           </option>
           <option name="pomFileName" />

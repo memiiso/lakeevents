@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-
 import java.time.Duration;
 
 public class TestDatabase {

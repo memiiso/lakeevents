@@ -1,20 +1,17 @@
 package org.memiiso.lakeevents;
 
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.Startup;
 import org.apache.camel.CamelContext;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.aws.s3.S3Constants;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.apache.camel.model.RouteDefinition;
+import org.apache.camel.spi.PropertiesComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-
-@ApplicationScoped
-@Startup
+@Component
 public class LakeEventsServer extends RouteBuilder {
     final Logger logger = LoggerFactory.getLogger(LakeEventsServer.class);
     private static final String DATABASE_READER =
@@ -30,54 +27,31 @@ public class LakeEventsServer extends RouteBuilder {
                     + "&offsetStorageFileName=/tmp/offset.dat"
                     + "&pluginName=pgoutput";
 
-    @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
+    @Value( "${bucketNameOrArn}" )
     public String S3_BUCKET_NAME;
-
-    public void stop(@Observes ShutdownEvent event) {
-        logger.warn("Stopping...");
-    }
-
-    RouteBuilder debeziumcdc = new RouteBuilder() {
-        public void configure() {
-            errorHandler(deadLetterChannel("mock:error"));
-            from(DATABASE_READER)
-                    .startupOrder(20)
-                    .routeId(LakeEventsServer.class.getName() + ".DatabaseReader")
-                    .log(LoggingLevel.ERROR, "Incoming message \nBODY: ${body} \nHEADERS: ${headers}");
-        }
-    };
-
-    CamelContext context;
-
-    public void manualstart() throws Exception {
-        logger.error("Starting manualstart");
-        context.addRoutes(debeziumcdc);
-    }
-
 
     @Override
     public void configure() {
-        context = getContext();
-        /*
+
         logger.info("Configure...");
         logger.info("S3 bucket name {}", S3_BUCKET_NAME);
-        final PropertiesComponent prop = getContext().getPropertiesComponent();
-        /*
-        final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(prop.resolveProperty("broker.url").get());
-        final JmsComponent jmsComponent = JmsComponent.jmsComponentAutoAcknowledge(connectionFactory);
-        jmsComponent.setUsername(prop.resolveProperty("broker.user").get());
-        jmsComponent.setPassword(prop.resolveProperty("broker.password").get());
-        getContext().addComponent("jms", jmsComponent);
 
+        //final PropertiesComponent prop = getContext().getPropertiesComponent();
+        //final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(prop.resolveProperty("broker.url").get());
+        //final JmsComponent jmsComponent = JmsComponent.jmsComponentAutoAcknowledge(connectionFactory);
+        //jmsComponent.setUsername(prop.resolveProperty("broker.user").get());
+        //jmsComponent.setPassword(prop.resolveProperty("broker.password").get());
+        //getContext().addComponent("jms", jmsComponent);
 
         //.multicast().streaming().parallelProcessing()
         //.stopOnException().to("direct:json-writer")
         //.end()
         //        .end()
-        RouteDefinition a = from(DATABASE_READER)
+        from(DATABASE_READER)
                 .startupOrder(20)
                 .routeId(LakeEventsServer.class.getName() + ".DatabaseReader")
-                .log(LoggingLevel.ERROR, "Incoming message \nBODY: ${body} \nHEADERS: ${headers}");
+                .log(LoggingLevel.ERROR, "Incoming message \nBODY: ${body} \nHEADERS: ${headers}")
+                .autoStartup(true);
 /*
         from("direct:json-writer")
                 .startupOrder(19)

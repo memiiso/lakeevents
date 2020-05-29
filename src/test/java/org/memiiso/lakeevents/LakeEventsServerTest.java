@@ -1,16 +1,32 @@
 package org.memiiso.lakeevents;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.apache.camel.component.aws.s3.S3Constants;
+import org.apache.camel.CamelContext;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.junit5.CamelTestSupport;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+import org.apache.camel.test.spring.junit5.MockEndpoints;
 import org.awaitility.Awaitility;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -19,26 +35,38 @@ import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import javax.inject.Inject;
 import java.time.Duration;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@QuarkusTest
-public class LakeEventsServerTest {
+@CamelSpringBootTest
+@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
+//@ContextConfiguration(classes = Application.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class LakeEventsServerTest extends CamelTestSupport {
     static TestS3 s3server = new TestS3();
     static TestDatabase testDb = new TestDatabase();
     public final Logger logger = LoggerFactory.getLogger(LakeEventsServerTest.class);
-    @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
+
+    @Value( "${bucketNameOrArn}" )
     public String S3_BUCKET_NAME;
-    @ConfigProperty(name = "bucketNameOrArn")
-    String s3_name;
+
+    @Autowired
+    protected CamelContext camelContext;
 
     {
         logger.warn("creating LakeEventsServer");
         //lakeEvents = new LakeEventsServer();
     }
+
+    @EndpointInject("mock:b")
+    protected MockEndpoint mockB;
+
+    @Produce("direct:start")
+    protected ProducerTemplate start;
+
 
     @BeforeAll
     public static void startContainers() {
@@ -59,15 +87,17 @@ public class LakeEventsServerTest {
     @Test
     public void testLakeEventsService() throws Exception {
         logger.warn("running testLakeEventsService");
-        Assertions.assertNotNull(S3_BUCKET_NAME);
-        LakeEventsServer lakeEvents = new LakeEventsServer();
-        lakeEvents.manualstart();
-        logger.warn("started LakeEventsServer");
-        Assertions.assertNotNull(lakeEvents);
-        Thread.sleep(500);
-        assertThat(S3_BUCKET_NAME).isEqualTo("test-bucket");
-        assertNotNull(ConfigProvider.getConfig().getValue(S3Constants.BUCKET_NAME, String.class));
+        logger.warn("running testLakeEventsService {}",context.getName());
 
+        assertEquals(S3_BUCKET_NAME,"test-bucket");
+
+        Assertions.assertNotNull(S3_BUCKET_NAME);
+        logger.warn("started LakeEventsServer");
+        //Assertions.assertNotNull(s);
+        Thread.sleep(500);
+        assertEquals(S3_BUCKET_NAME,"test-bucket");
+
+        /*
         //ProfileCredentialsProvider pcred = ProfileCredentialsProvider.create("default");
         AwsBasicCredentials c = AwsBasicCredentials.create("test", "testtest");
         StaticCredentialsProvider pcred = StaticCredentialsProvider.create(c);
@@ -90,7 +120,7 @@ public class LakeEventsServerTest {
             }
             return (objects.size() >= 2);
         });
-
+        */
     }
 
 }
