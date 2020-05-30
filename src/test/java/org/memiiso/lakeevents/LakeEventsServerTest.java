@@ -1,9 +1,5 @@
 package org.memiiso.lakeevents;
 
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
-import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
 import org.junit.jupiter.api.AfterAll;
@@ -12,7 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,21 +28,10 @@ public class LakeEventsServerTest extends CamelTestSupport {
 
     @Value( "${bucketNameOrArn}" )
     public String S3_BUCKET_NAME;
-
-    @Autowired
-    protected LakeEventsServer lakeServer;
-
     {
         logger.warn("creating LakeEventsServer");
         //lakeEvents = new LakeEventsServer();
     }
-
-    @EndpointInject("mock:b")
-    protected MockEndpoint mockB;
-
-    @Produce("direct:start")
-    protected ProducerTemplate start;
-
 
     @BeforeAll
     public static void startContainers() {
@@ -67,6 +51,7 @@ public class LakeEventsServerTest extends CamelTestSupport {
 
     @Test
     public void testLakeEventsService() throws Exception {
+
         logger.warn("running testLakeEventsService");
         logger.warn("running testLakeEventsService {}",context.getName());
 

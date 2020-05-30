@@ -1,15 +1,13 @@
 package org.memiiso.lakeevents;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.spi.PropertiesComponent;
+import org.apache.camel.component.debezium.DebeziumPostgresComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component
 public class LakeEventsServer extends RouteBuilder {
@@ -27,15 +25,18 @@ public class LakeEventsServer extends RouteBuilder {
                     + "&offsetStorageFileName=/tmp/offset.dat"
                     + "&pluginName=pgoutput";
 
-    @Value( "${bucketNameOrArn}" )
+    @Value("${bucketNameOrArn}")
     public String S3_BUCKET_NAME;
+
+
+    @Autowired
+    DebeziumPostgresComponent cdcService;
 
     @Override
     public void configure() {
 
         logger.info("Configure...");
         logger.info("S3 bucket name {}", S3_BUCKET_NAME);
-
         //final PropertiesComponent prop = getContext().getPropertiesComponent();
         //final ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(prop.resolveProperty("broker.url").get());
         //final JmsComponent jmsComponent = JmsComponent.jmsComponentAutoAcknowledge(connectionFactory);
@@ -49,6 +50,7 @@ public class LakeEventsServer extends RouteBuilder {
         //        .end()
         from(DATABASE_READER)
                 .startupOrder(20)
+                .bean(cdcService)
                 .routeId(LakeEventsServer.class.getName() + ".DatabaseReader")
                 .log(LoggingLevel.ERROR, "Incoming message \nBODY: ${body} \nHEADERS: ${headers}")
                 .autoStartup(true);
