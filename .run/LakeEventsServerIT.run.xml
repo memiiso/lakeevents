@@ -1,15 +1,15 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="LakeEventsServerIT" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <configuration default="false" name="CdcEventsServerIT" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
         <module name="lakeevents2"/>
         <useClassPathOnly/>
         <extension name="coverage">
             <pattern>
-                <option name="PATTERN" value="org.memiiso.lakeevents.*"/>
+                <option name="PATTERN" value="org.memiiso.cdcevents.*"/>
                 <option name="ENABLED" value="true"/>
             </pattern>
         </extension>
-        <option name="PACKAGE_NAME" value="org.memiiso.lakeevents"/>
-        <option name="MAIN_CLASS_NAME" value="org.memiiso.lakeevents.LakeEventsServerIT"/>
+        <option name="PACKAGE_NAME" value="org.memiiso.cdcevents"/>
+        <option name="MAIN_CLASS_NAME" value="org.memiiso.cdcevents.CdcEventsServerIT"/>
         <option name="METHOD_NAME" value=""/>
         <option name="TEST_OBJECT" value="class"/>
         <option name="PARAMETERS" value=""/>

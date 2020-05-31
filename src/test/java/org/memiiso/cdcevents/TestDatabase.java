@@ -3,9 +3,11 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.memiiso.lakeevents;
+package org.memiiso.cdcevents;
 
 import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -21,6 +23,7 @@ public class TestDatabase {
     static final String POSTGRES_HOST = "localhost";
     static final Integer POSTGRES_PORT = 5432;
     private GenericContainer container = null;
+    final Logger logger = LoggerFactory.getLogger(TestDatabase.class);
 
     public void start() {
         try {
@@ -36,6 +39,7 @@ public class TestDatabase {
                     .withEnv("LANG", "en_US.utf8")
                     .withStartupTimeout(Duration.ofSeconds(30));
             container.start();
+            logger.warn("PG Container {} Started", POSTGRES_IMAGE);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

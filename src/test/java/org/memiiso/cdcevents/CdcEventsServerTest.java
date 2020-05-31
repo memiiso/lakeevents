@@ -1,45 +1,43 @@
-package org.memiiso.lakeevents;
+package org.memiiso.cdcevents;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusTest;
 import org.apache.camel.component.aws.s3.S3Constants;
+import org.awaitility.Awaitility;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.fest.assertions.Assertions;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ActiveProfiles("test")// load src/main/resources/application-test.properties
-//@ContextConfiguration(classes = ConfigFileApplicationContextInitializer.class)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD) // cleanup spring context because jms broker does not exit properly
-
-/**
- * Native mode tests. In the native mode, the same tests will be executed as in the JVM mode because this class extends
- * {@link LakeEventsServerTest}.
- */
-@NativeImageTest
-public class LakeEventsServerIT extends LakeEventsServerTest {
-
+@QuarkusTest
+public class CdcEventsServerTest {
     static TestS3 s3server = new TestS3();
     static TestDatabase testDb = new TestDatabase();
-    public final Logger logger = LoggerFactory.getLogger(LakeEventsServerIT.class);
-
+    public final Logger logger = LoggerFactory.getLogger(CdcEventsServerTest.class);
     @ConfigProperty(name = S3Constants.BUCKET_NAME, defaultValue = "test-bucket")
     public String S3_BUCKET_NAME;
+    @ConfigProperty(name = "bucketNameOrArn")
+    String s3_name;
+
+    {
+        logger.warn("creating CdcEventsServerTest");
+    }
 
     @BeforeAll
     public static void startContainers() {
@@ -58,29 +56,39 @@ public class LakeEventsServerIT extends LakeEventsServerTest {
     }
 
     @Test
-    public void endToEndTest() throws Exception {
-        Thread.sleep(500000);
+    public void testCdcEventsService() throws Exception {
+        logger.warn("running Test testCdcEventsService");
+        Assertions.assertNotNull(S3_BUCKET_NAME);
+        CdcEventsServer eventsServer = new CdcEventsServer();
+        logger.warn("started CdcEventsServer");
+        Assertions.assertNotNull(eventsServer);
+        Thread.sleep(500);
         assertThat(S3_BUCKET_NAME).isEqualTo("test-bucket");
         assertNotNull(ConfigProvider.getConfig().getValue(S3Constants.BUCKET_NAME, String.class));
 
-        ProfileCredentialsProvider pcred = ProfileCredentialsProvider.create("default");
+        //ProfileCredentialsProvider pcred = ProfileCredentialsProvider.create("default");
+        AwsBasicCredentials c = AwsBasicCredentials.create("test", "testtest");
+        StaticCredentialsProvider pcred = StaticCredentialsProvider.create(c);
         S3Client s3client = S3Client.builder()
                 .credentialsProvider(pcred)
                 .endpointOverride(new java.net.URI("http://" + s3server.getContainerIpAddress() + ':' + s3server.getMappedPort()))
                 .build();
         s3client.createBucket(CreateBucketRequest.builder().bucket("test-bucket").build());
-        Assertions.assertThat(s3client.listBuckets().toString().contains("test-bucket"));
+        org.fest.assertions.Assertions.assertThat(s3client.listBuckets().toString().contains("test-bucket"));
 
-        ListObjectsRequest listObjects = ListObjectsRequest
-                .builder()
-                .bucket("test-bucket")
-                .build();
-        ListObjectsResponse res = s3client.listObjects(listObjects);
-        List<S3Object> objects = res.contents();
-        System.out.println(objects.toString());
-        if (objects.size() >= 2) {
-            System.out.println(objects.toString());
-        }
-        Assertions.assertThat(objects.size() >= 2);
+        Awaitility.await().atMost(Duration.ofSeconds(60)).until(() -> {
+            ListObjectsRequest listObjects = ListObjectsRequest
+                    .builder()
+                    .bucket("test-bucket")
+                    .build();
+            ListObjectsResponse res = s3client.listObjects(listObjects);
+            List<S3Object> objects = res.contents();
+            if (objects.size() >= 2) {
+                System.out.println(objects.toString());
+            }
+            return (objects.size() >= 2);
+        });
+
     }
+
 }

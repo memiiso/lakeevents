@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.memiiso</groupId>
-    <artifactId>lakeevents</artifactId>
+    <artifactId>cdcevents</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <camel.version>3.3.0</camel.version>
@@ -217,6 +217,12 @@
             <groupId>org.easytesting</groupId>
             <artifactId>fest-assert</artifactId>
             <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-integration-test-support</artifactId>
+            <version>1.0.0-M7</version>
             <scope>test</scope>
         </dependency>
         <dependency>

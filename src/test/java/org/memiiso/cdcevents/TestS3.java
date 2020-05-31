@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.memiiso.lakeevents;
+package org.memiiso.cdcevents;
 
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;

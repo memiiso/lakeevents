@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="lakeevents-quarkus [clean,compile...]" type="MavenRunConfiguration"
-                   factoryName="Maven" nameIsGenerated="true">
+    <configuration default="false" name="cdcevents-quarkus [clean,compile...]" type="MavenRunConfiguration"
+                   factoryName="Maven">
         <MavenSettings>
             <option name="myGeneralSettings"/>
             <option name="myRunnerSettings"/>

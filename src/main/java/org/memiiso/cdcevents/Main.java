@@ -1,5 +1,5 @@
 
-package org.memiiso.lakeevents;
+package org.memiiso.cdcevents;
 
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
